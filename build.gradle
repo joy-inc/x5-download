@@ -1,15 +1,26 @@
 apply plugin: 'com.android.library'
+apply plugin: "com.github.dcendents.android-maven"
+apply plugin: 'com.jfrog.bintray'
 
-version = "2.3.0"// This is the library version used when deploying the artifact
+ext {
+    siteUrl = 'https://github.com/joy-inc/x5-download'// 项目的主页
+    gitUrl = 'git@github.com:joy-inc/x5-download.git'// Git仓库的url
+
+    libraryDescription = 'x5-download'// 项目描述
+    libraryName = "x5-download"// 发布到JCenter上的项目名字
+}
+
+version = "2.4.0"// This is the library version used when deploying the artifact
+group = "com.joy.support"// Maven Group ID for the artifact，一般填你唯一的包名
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 12
-        targetSdkVersion 24
-        versionCode 230
+        minSdkVersion 8
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 240
         versionName version
     }
     buildTypes {
@@ -22,4 +33,68 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                // Add your description here
+                name libraryDescription
+                url siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'daishiwen'// 填写的一些基本信息
+                        name 'daishiwen'
+                        email 'daishiwen1212@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = "joy-library"
+        name = libraryName
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
 }
