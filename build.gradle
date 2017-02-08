@@ -10,7 +10,7 @@ ext {
     libraryName = "x5-download"// 发布到JCenter上的项目名字
 }
 
-version = "2.4.0"// This is the library version used when deploying the artifact
+version = "2.6.0"// This is the library version used when deploying the artifact
 group = "com.joy.support"// Maven Group ID for the artifact，一般填你唯一的包名
 
 android {
@@ -20,8 +20,21 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 240
+        versionCode 260
         versionName version
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+        lintOptions {
+            abortOnError false
+        }
+        // moves the whole sourceSet (and its sub folders) to a new folder. This moves src/androidTest/* to tests/*
+        androidTest.setRoot('tests')
     }
     buildTypes {
         release {
