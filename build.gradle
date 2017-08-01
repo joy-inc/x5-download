@@ -10,7 +10,7 @@ ext {
     libraryName = "x5-download"// 发布到JCenter上的项目名字
 }
 
-version = "2.6.0"// This is the library version used when deploying the artifact
+version = "2.6.1"// This is the library version used when deploying the artifact
 group = "com.joy.support"// Maven Group ID for the artifact，一般填你唯一的包名
 
 android {
@@ -20,11 +20,14 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 260
+        versionCode 261
         versionName version
+
+        // ======需在主工程中声明，否则64位的手机无法加载X5内核======
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
         }
+        // =====================================================
     }
     sourceSets {
         main {
